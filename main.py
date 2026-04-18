@@ -154,6 +154,12 @@ def handle_http(tcp):
                 send_file(conn, "/image.jpg", "image/jpeg")
             elif "GET / " in request or "GET /index" in request:
                 conn.send(HTML.encode())
+            elif "generate_204" in request or "gen_204" in request:
+                # Android captive portal detection — ожидает 204, мы редиректим
+                conn.send(b"HTTP/1.1 302 Found\r\nLocation: http://" + AP_IP.encode() + b"/\r\n\r\n")
+            elif "hotspot-detect" in request or "success.html" in request or "ncsi.txt" in request:
+                # iOS и Windows captive portal detection
+                conn.send(b"HTTP/1.1 302 Found\r\nLocation: http://" + AP_IP.encode() + b"/\r\n\r\n")
             else:
                 conn.send(REDIRECT.encode())
         except Exception as e:
